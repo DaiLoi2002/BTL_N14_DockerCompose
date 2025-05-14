@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./KienTrucPhanMem_Nhom14_Client
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    environment:
+      - REACT_APP_API_URL=http://localhost:3000
+
+  backend:
+    build:
+      context: ./KienTrucPhanMem_Nhom14/Server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://mongodb:27017/n14shop
+      - DATABASE_URL=mongodb://mongodb:27017/n14shop
+      - AWS_ACCESS_KEY_ID=AKIAVXZQZQZQZQZQZQZQ
+      - AWS_SECRET_ACCESS_KEY=your_secret_access_key
+      - AWS_REGION=ap-southeast-1
+      - AWS_BUCKET_NAME=n14shop-bucket
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - app-network
+    environment:
+      - MONGO_INITDB_DATABASE=n14shop
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongodb_data: 
